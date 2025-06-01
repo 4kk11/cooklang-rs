@@ -20,7 +20,7 @@
   "scripts": {
     "build": "echo noop",
     "build-wasm": "wasm-pack build --target web",
-    "watch-wasm": "wasm-pack build --dev --mode no-install --target web",
+    "watch-wasm": "cargo watch -i pkg/ -s 'wasm-pack build --dev --target web'",
     "prepare": "npm run build-wasm && npm run build"
   },
   "devDependencies": {

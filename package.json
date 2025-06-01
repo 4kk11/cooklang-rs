@@ -24,13 +24,11 @@
     },
     "watch-wasm": {
       "command": "npm run -w @cooklang/cooklang-ts watch-wasm",
+      "service": true,
       "files": [
         "!target",
         "src/**/*.rs",
         "typescript/**/*.rs"
-      ],
-      "output": [
-        "pkg/**"
       ]
     }
   }
