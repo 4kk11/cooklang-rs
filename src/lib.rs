@@ -109,6 +109,7 @@ bitflags! {
     ///
     /// [`Extensions::default`] enables all extensions.
     #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+    #[cfg_attr(feature = "wasm", derive(tsify::Tsify), tsify(into_wasm_abi), tsify(from_wasm_abi))]
     pub struct Extensions: u32 {
         /// Enables the [`Modifiers`](crate::ast::Modifiers)
         const COMPONENT_MODIFIERS      = 1 << 1;
@@ -163,12 +164,14 @@ impl Default for Extensions {
 /// The 2 main methods are [`CooklangParser::parse`] and [`CooklangParser::parse_metadata`].
 ///
 /// You can also skip using this struct and use [`parser::PullParser`] and [`analysis::parse_events`].
-#[derive(Debug, Default, Clone, PartialEq)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(tsify::Tsify), tsify(into_wasm_abi), tsify(from_wasm_abi))]
 pub struct CooklangParser {
     extensions: Extensions,
     converter: Converter,
 }
 
+#[cfg_attr(feature = "wasm", tsify::declare)]
 pub type RecipeResult = PassResult<ScalableRecipe>;
 pub type MetadataResult = PassResult<Metadata>;
 

@@ -1,4 +1,4 @@
-import init, { State, version } from "@cooklang/cooklang-ts";
+import init, { CooklangParserHandle, intoErrorText, intoRsonText, State, version } from "@cooklang/cooklang-ts";
 
 declare global {
   interface Window {
@@ -58,33 +58,69 @@ async function run(): Promise<void> {
     window.sessionStorage.setItem("input", input);
     switch (parserSelect.value) {
       case "full": {
-        const { value, error } = state.parse_full(input, jsonCheckbox.checked);
-        output.textContent = value;
-        errors.innerHTML = error;
+        const parser = new CooklangParserHandle(null, null);
+        const parsed = parser.parse(input);
+        const value = parsed.output;
+
+        errors.innerHTML = intoErrorText(parsed.report, input) ?? "";
+
+        if (value){
+          if (jsonCheckbox.checked) {
+            output.textContent = JSON.stringify(value, null, 2);
+          } else {
+            output.textContent = intoRsonText(parsed) ?? "";
+          }
+        } else {
+          output.textContent = "<no output>";
+        }
+
         break;
       }
       case "events": {
-        const events = state.parse_events(input);
-        output.textContent = events;
+        const parser = new CooklangParserHandle(null, null);
+        const events = parser.parseEvents(input);
+
+        output.textContent = JSON.stringify(events, null, 2);
         errors.innerHTML = "";
         break;
       }
       case "ast": {
-        const { value, error } = state.parse_ast(input, jsonCheckbox.checked);
-        output.textContent = value;
-        errors.innerHTML = error;
+        const parser = new CooklangParserHandle(null, null);
+        const ast = parser.parseAst(input);
+
+        if (ast) {
+          output.textContent = JSON.stringify(ast, null, 2);
+        } else {
+          output.textContent = "<no output>";
+        }
+        errors.innerHTML = "";
         break;
       }
       case "render": {
-        const { value, error } = state.parse_render(input, servings.value.length === 0 ? null : servings.valueAsNumber);
-        output.innerHTML = value;
-        errors.innerHTML = error;
+        const parser = new CooklangParserHandle(null, null);
+        const result = parser.parse(input);
+        const value = result.output;
+
+        errors.innerHTML = intoErrorText(result.report, input) ?? "";
+
+        if (value) {
+          const scaled = servings.value.length === 0 ? parser.defaultScaleRecipe(value) : parser.scaleRecipe(value, servings.valueAsNumber);
+          output.innerHTML = parser.renderRecipe(scaled);
+        } else {
+          output.textContent = "<no output>";
+        }
+        
         break;
       }
       case "stdmeta": {
-        const { value, error } = state.std_metadata(input);
-        output.innerHTML = value;
-        errors.innerHTML = error;
+        const parser = new CooklangParserHandle(null, null);
+        const metadata = parser.parseMetadata(input);
+        if (metadata) {
+          output.textContent = JSON.stringify(metadata, null, 2);
+        } else {
+          output.textContent = "<no output>";
+        }
+        errors.innerHTML = "";
         break;
       }
     }

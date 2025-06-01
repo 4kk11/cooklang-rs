@@ -51,6 +51,7 @@ impl Item<'_> {
 
 /// Ingredient [`Item`]
 #[derive(Debug, Clone, Serialize, PartialEq)]
+#[cfg_attr(feature = "wasm", derive(tsify::Tsify))]
 pub struct Ingredient<'a> {
     /// Ingredient modifiers
     ///
@@ -107,6 +108,7 @@ pub struct Quantity<'a> {
 
 /// Quantity value(s)
 #[derive(Debug, Clone, PartialEq, Serialize)]
+#[cfg_attr(feature = "wasm", derive(tsify::Tsify))]
 pub struct QuantityValue {
     pub value: Located<Value>,
     pub scaling_lock: Option<Span>
@@ -154,6 +156,7 @@ bitflags! {
     ///
     /// Sadly, for now this can represent invalid combinations of modifiers.
     #[derive(Debug, Default, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+    #[cfg_attr(feature = "wasm", derive(tsify::Tsify))]
     pub struct Modifiers: u16 {
         /// refers to a recipe with the same name
         const RECIPE         = 1 << 0;
@@ -202,6 +205,7 @@ impl std::fmt::Display for Modifiers {
 /// This is not checked, and may point to inexistent or future steps/sections
 /// which is invalid.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(tsify::Tsify))]
 pub struct IntermediateData {
     /// The mode in which `val` works
     pub ref_mode: IntermediateRefMode,
@@ -225,6 +229,7 @@ pub struct IntermediateData {
 
 /// How to treat the value in [`IntermediateData`]
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(tsify::Tsify))]
 pub enum IntermediateRefMode {
     /// Step or section number
     Number,
@@ -236,6 +241,7 @@ pub enum IntermediateRefMode {
 
 /// What the target of [`IntermediateData`] is
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(tsify::Tsify))]
 pub enum IntermediateTargetKind {
     /// A step in the current section
     Step,

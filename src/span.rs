@@ -7,6 +7,7 @@ use std::ops::Range;
 /// The offsets are zero-indexed charactere offsets from the beginning of the source
 /// code.
 #[derive(Clone, Copy, PartialEq, Eq, serde::Serialize, serde::Deserialize, PartialOrd, Ord)]
+#[cfg_attr(feature = "wasm", derive(tsify::Tsify))]
 pub struct Span {
     start: usize,
     end: usize,

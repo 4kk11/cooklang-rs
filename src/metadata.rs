@@ -23,6 +23,7 @@ use crate::{
 /// was not present or the value was not of the expected type. You can also
 /// decide to not use them and extract the metadata you prefer.
 #[derive(Debug, PartialEq, Clone, Default, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(tsify::Tsify))]
 pub struct Metadata {
     /// All the raw key/value pairs from the recipe
     pub map: serde_yaml::Mapping,
@@ -593,6 +594,7 @@ pub(crate) fn check_std_entry(
 ///
 /// At least one of the fields is [`Some`].
 #[derive(Serialize, Deserialize, Debug, PartialEq, Eq, Clone)]
+#[cfg_attr(feature = "wasm", derive(tsify::Tsify))]
 #[serde(deny_unknown_fields)]
 pub struct NameAndUrl {
     name: Option<String>,
@@ -670,6 +672,7 @@ fn is_url(s: &str) -> bool {
 ///
 /// All values are in minutes.
 #[derive(Serialize, Deserialize, Debug, PartialEq, Eq, Clone, Copy)]
+#[cfg_attr(feature = "wasm", derive(tsify::Tsify))]
 #[serde(untagged, deny_unknown_fields)]
 pub enum RecipeTime {
     /// Total time
