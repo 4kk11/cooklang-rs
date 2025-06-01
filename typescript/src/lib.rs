@@ -1,3 +1,11 @@
+mod custom_types;
+mod recipe;
+mod parser;
+mod event;
+mod ast;
+mod owned;
+mod metadata;
+
 use cooklang::ast::build_ast;
 use cooklang::error::SourceReport;
 use cooklang::metadata::{CooklangValueExt, NameAndUrl, RecipeTime};
@@ -167,7 +175,7 @@ impl FallibleResult {
     }
 }
 
-fn render(r: cooklang::ScaledRecipe, converter: &Converter) -> String {
+pub fn render(r: cooklang::ScaledRecipe, converter: &Converter) -> String {
     let ingredient_list = r.group_ingredients(converter);
     maud::html! {
         @if !r.metadata.map.is_empty() {
