@@ -11,6 +11,7 @@ use crate::{error::Recover, span::Span};
 
 /// Wrapper type that adds location information to another
 #[derive(PartialEq, Serialize)]
+#[cfg_attr(feature = "wasm", derive(tsify::Tsify))]
 pub struct Located<T> {
     inner: T,
     span: Span,

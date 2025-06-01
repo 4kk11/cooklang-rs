@@ -12,18 +12,22 @@ use crate::{
 
 /// A quantity used in components
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
-pub struct Quantity<V: QuantityValue = Value> {
+#[cfg_attr(feature = "wasm", derive(tsify::Tsify))]
+pub struct Quantity<V> {
     /// Value
     pub(crate) value: V,
     pub(crate) unit: Option<String>,
 }
 
+#[cfg_attr(feature = "wasm", tsify::declare)]
 pub type ScalableQuantity = Quantity<ScalableValue>;
+#[cfg_attr(feature = "wasm", tsify::declare)]
 pub type ScaledQuantity = Quantity<Value>;
 
 /// A value with scaling support
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 #[serde(tag = "type", content = "value", rename_all = "camelCase")]
+#[cfg_attr(feature = "wasm", derive(tsify::Tsify))]
 pub enum ScalableValue {
     /// Cannot be scaled
     Fixed(Value),
@@ -34,6 +38,7 @@ pub enum ScalableValue {
 /// Base value
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 #[serde(tag = "type", content = "value", rename_all = "camelCase")]
+#[cfg_attr(feature = "wasm", derive(tsify::Tsify))]
 pub enum Value {
     /// Numeric
     Number(Number),
@@ -67,6 +72,7 @@ pub enum Value {
 /// ```
 #[derive(Debug, Clone, Copy, Serialize, Deserialize)]
 #[serde(tag = "type", content = "value", rename_all = "camelCase")]
+#[cfg_attr(feature = "wasm", derive(tsify::Tsify))]
 pub enum Number {
     /// A regular number
     Regular(f64),
@@ -121,7 +127,7 @@ impl PartialEq for Number {
     }
 }
 
-pub trait QuantityValue: Display + Clone + sealed::Sealed {
+pub trait QuantityValue: Display + Clone + sealed::Sealed + Serialize  {
     /// Check if the value is or contains text
     fn is_text(&self) -> bool;
 }

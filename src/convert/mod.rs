@@ -31,7 +31,8 @@ pub mod units_file;
 /// [`Converter::default`] changes with the feature `bundled_units`:
 /// - When enabled, [`Converter::bundled`].
 /// - When disabled, [`Converter::empty`].
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(tsify::Tsify), tsify(into_wasm_abi), tsify(from_wasm_abi))]
 pub struct Converter {
     all_units: Vec<Arc<Unit>>,
     unit_index: UnitIndex,
@@ -193,7 +194,8 @@ impl PartialEq for Converter {
     }
 }
 
-#[derive(Debug, Clone, Default)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(tsify::Tsify))]
 struct Fractions {
     all: Option<FractionsConfig>,
     metric: Option<FractionsConfig>,
@@ -224,7 +226,8 @@ impl Fractions {
     }
 }
 
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(tsify::Tsify))]
 pub(crate) struct FractionsConfig {
     pub enabled: bool,
     pub accuracy: f32,
@@ -243,7 +246,8 @@ impl Default for FractionsConfig {
     }
 }
 
-#[derive(Debug, Default, Clone, PartialEq)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(tsify::Tsify))]
 pub(crate) struct UnitIndex(HashMap<Arc<str>, usize>);
 
 impl UnitIndex {
@@ -255,6 +259,7 @@ impl UnitIndex {
     }
 }
 
+#[cfg_attr(feature = "wasm", tsify::declare)]
 pub(crate) type UnitQuantityIndex = EnumMap<PhysicalQuantity, Vec<usize>>;
 
 /// A unit
@@ -263,7 +268,8 @@ pub(crate) type UnitQuantityIndex = EnumMap<PhysicalQuantity, Vec<usize>>;
 ///
 /// It implements [Display](std::fmt::Display). It will use [`Self::symbol`] or,
 /// if alternate (`#`) is given, it will try the first name.
-#[derive(Debug, Clone, Serialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(tsify::Tsify))]
 pub struct Unit {
     /// All the names that may be used to format the unit
     pub names: Vec<Arc<str>>,
@@ -323,7 +329,8 @@ impl std::fmt::Display for Unit {
     }
 }
 
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(tsify::Tsify))]
 enum BestConversionsStore {
     Unified(BestConversions),
     BySystem {
@@ -350,7 +357,8 @@ impl Default for BestConversionsStore {
     }
 }
 
-#[derive(Debug, Clone, Default, PartialEq)]
+#[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(tsify::Tsify))]
 struct BestConversions(Vec<(f64, usize)>);
 
 impl BestConversions {
@@ -404,6 +412,7 @@ impl BestConversions {
 )]
 #[serde(rename_all = "camelCase")]
 #[strum(serialize_all = "camelCase")]
+#[cfg_attr(feature = "wasm", derive(tsify::Tsify))]
 pub enum PhysicalQuantity {
     Volume,
     Mass,
@@ -776,6 +785,7 @@ pub enum ConvertTo<'a> {
 )]
 #[serde(rename_all = "camelCase")]
 #[strum(serialize_all = "camelCase")]
+#[cfg_attr(feature = "wasm", derive(tsify::Tsify))]
 pub enum System {
     #[default]
     Metric,

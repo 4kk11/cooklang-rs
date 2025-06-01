@@ -24,6 +24,8 @@ smallvec = { version = "1" }
 unicase = "2.7.0"
 yansi = "1.0.1"
 serde_yaml = "0.9.34"
+wasm-bindgen = {version = "0.2.100", optional = true}
+tsify = { version = "0.5.5", optional = true }
 
 [dev-dependencies]
 toml = "0.8"
@@ -43,6 +45,7 @@ proc-macro2 = { version = "1", optional = true }
 default = ["aisle", "bundled_units"]
 bundled_units = ["toml", "prettyplease", "quote", "syn", "proc-macro2"]
 aisle = []
+wasm = ["dep:wasm-bindgen", "dep:tsify"]
 
 [[bench]]
 name = "parse"

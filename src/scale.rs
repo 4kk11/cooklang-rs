@@ -11,6 +11,7 @@ use crate::{
 
 /// Configures the scaling target
 #[derive(Debug, Clone, Copy, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(tsify::Tsify))]
 pub struct ScaleTarget {
     factor: f64
 }
@@ -33,12 +34,14 @@ impl ScaleTarget {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone)]
+#[cfg_attr(feature = "wasm", derive(tsify::Tsify))]
 pub struct Servings(pub(crate) Option<Vec<u32>>);
 
 /// Possible scaled states of a recipe
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(tag = "type")]
+#[cfg_attr(feature = "wasm", derive(tsify::Tsify))]
 pub enum Scaled {
     /// The recipe was scaled to its based servings
     ///
@@ -51,6 +54,7 @@ pub enum Scaled {
 
 /// Data from scaling a recipe
 #[derive(Debug, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(tsify::Tsify))]
 pub struct ScaledData {
     /// What the target was
     pub target: ScaleTarget,
@@ -64,6 +68,7 @@ pub struct ScaledData {
 
 /// Possible outcomes from scaling a component
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(tsify::Tsify))]
 #[serde(rename_all = "camelCase")]
 pub enum ScaleOutcome {
     /// Success

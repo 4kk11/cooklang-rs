@@ -24,7 +24,11 @@ use crate::{
 /// returns [`ScalableValue`]s and after scaling, these are converted to regular
 /// [`Value`]s.
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
-pub struct Recipe<D, V: QuantityValue> {
+#[cfg_attr(feature = "wasm", derive(tsify::Tsify), tsify(into_wasm_abi, from_wasm_abi))]
+pub struct Recipe<D, V> 
+where
+    V: QuantityValue,
+{
     /// Metadata
     pub metadata: Metadata,
     /// Each of the sections
@@ -47,16 +51,19 @@ pub struct Recipe<D, V: QuantityValue> {
 ///
 /// Note that this doesn't implement [`Recipe::convert`]. Only scaled recipes
 /// can be converted.
+#[cfg_attr(feature = "wasm", tsify::declare)]
 pub type ScalableRecipe = Recipe<crate::scale::Servings, ScalableValue>;
 
 /// A recipe after being scaled
 ///
 /// Note that this doesn't implement [`Recipe::scale`]. A recipe can only be
 /// scaled once.
+#[cfg_attr(feature = "wasm", tsify::declare)]
 pub type ScaledRecipe = Recipe<crate::scale::Scaled, Value>;
 
 /// A section holding steps
 #[derive(Debug, Default, Serialize, Deserialize, PartialEq, Clone)]
+#[cfg_attr(feature = "wasm", derive(tsify::Tsify))]
 pub struct Section {
     /// Name of the section
     pub name: Option<String>,
@@ -83,6 +90,7 @@ impl Section {
 /// Each type of content inside a section
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
 #[serde(tag = "type", content = "value", rename_all = "camelCase")]
+#[cfg_attr(feature = "wasm", derive(tsify::Tsify))]
 pub enum Content {
     /// A step
     Step(Step),
@@ -126,6 +134,7 @@ impl Content {
 
 /// A step holding step [`Item`]s
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
+#[cfg_attr(feature = "wasm", derive(tsify::Tsify))]
 #[non_exhaustive]
 pub struct Step {
     /// [`Item`]s inside
@@ -144,6 +153,7 @@ pub struct Step {
 /// in it's corresponding [`Vec`] in the [`Recipe`].
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
 #[serde(tag = "type", rename_all = "camelCase")]
+#[cfg_attr(feature = "wasm", derive(tsify::Tsify))]
 pub enum Item {
     /// Just plain text
     Text {
@@ -164,6 +174,7 @@ pub enum Item {
 }
 
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
+#[cfg_attr(feature = "wasm", derive(tsify::Tsify))]
 pub struct RecipeReference {
     pub name: String,
     pub components: Vec<String>
@@ -177,7 +188,10 @@ impl RecipeReference {
 
 /// A recipe ingredient
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
-pub struct Ingredient<V: QuantityValue = Value> {
+pub struct Ingredient<V> 
+where 
+    V: QuantityValue,
+{
     /// Name
     ///
     /// This can have the form of a path if the ingredient references a recipe.
@@ -280,8 +294,10 @@ impl Ingredient<Value> {
 }
 
 /// A recipe cookware item
+
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
-pub struct Cookware<V: QuantityValue = Value> {
+#[cfg_attr(feature = "wasm", derive(tsify::Tsify))]
+pub struct Cookware<V> {
     /// Name
     pub name: String,
     /// Alias
@@ -361,7 +377,8 @@ impl Cookware<Value> {
 
 /// Relation between components
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
-#[serde(tag = "type", rename_all = "camelCase")]
+#[cfg_attr(feature = "wasm", derive(tsify::Tsify))]
+#[serde(tag = "type", rename_all = "camelCase", content = "content")]
 pub enum ComponentRelation {
     /// The component is a definition
     Definition {
@@ -427,8 +444,9 @@ impl ComponentRelation {
 /// Same as [`ComponentRelation`] but with the ability to reference steps and
 /// sections apart from other ingredients.
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
+#[cfg_attr(feature = "wasm", derive(tsify::Tsify))]
 pub struct IngredientRelation {
-    #[serde(flatten)]
+    // #[serde(flatten)]
     relation: ComponentRelation,
     reference_target: Option<IngredientReferenceTarget>,
 }
@@ -437,6 +455,7 @@ pub struct IngredientRelation {
 ///
 /// This is obtained from [`IngredientRelation::references_to`]
 #[derive(Debug, Serialize, Deserialize, PartialEq, Eq, Hash, Clone, Copy)]
+#[cfg_attr(feature = "wasm", derive(tsify::Tsify))]
 #[serde(rename_all = "camelCase")]
 pub enum IngredientReferenceTarget {
     /// Ingredient definition
@@ -539,7 +558,11 @@ impl IngredientRelation {
 /// If created from parsing, at least one of the fields is guaranteed to be
 /// [`Some`].
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
-pub struct Timer<V: QuantityValue = Value> {
+#[cfg_attr(feature = "wasm", derive(tsify::Tsify))]
+pub struct Timer<V>
+where 
+    V: QuantityValue,
+{
     /// Name
     pub name: Option<String>,
     /// Time quantity
